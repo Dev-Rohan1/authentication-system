@@ -1,43 +1,39 @@
-// imports external packages
-import express from "express"; // For creating the Express.js server
-import mongoose from "mongoose"; // For interacting with MongoDB
-import cors from "cors"; // For enabling Cross-Origin Resource Sharing (CORS)
-import bodyParser from "body-parser"; // For parsing request bodies (e.g., JSON)
-import cookieParser from "cookie-parser"; // For parsing cookies from requests
-import dotenv from "dotenv"; // For loading environment variables from a .env file
+// Import external packages
+import express from "express"; // Framework for building web applications and APIs.
+import mongoose from "mongoose"; // ODM (Object Data Modeling) library for MongoDB and Node.js.
+import bodyParser from "body-parser"; // Middleware for parsing incoming JSON request bodies.
+import cookieParser from "cookie-parser"; // Middleware for parsing cookies from incoming requests.
+import dotenv from "dotenv"; // Library to load environment variables from a .env file into process.env.
+import cors from "cors"; // Middleware to enable Cross-Origin Resource Sharing (CORS).
 
-// imports internal files
-import router from "./src/routes/api.js"; // Import the API routes
+// Import internal modules and functions
+import router from "./src/routes/api.js"; // Routes defined in the 'api.js' file.
 
-// express app initialization
-const app = express();
+// Initialize the Express application
+const app = express(); // Creates an instance of the Express application.
 
-// dotenv configuration
-dotenv.config(); // Load environment variables from .env file
+// Load environment variables from .env file
+dotenv.config(); // Makes environment variables accessible via process.env.
 
-// middlewares
-app.use(cors({ credentials: true })); // Enable CORS with credential support
-app.use(bodyParser.json()); // Parse incoming JSON request bodies
-app.use(cookieParser()); // Parse cookies from incoming requests
+// Middleware configuration
+app.use(cors({ credentials: true })); // Enables CORS with support for credentials.
+app.use(bodyParser.json()); // Parses incoming JSON request payloads.
+app.use(cookieParser()); // Parses cookies from incoming requests.
 
-// database connection
+// Database connection
 mongoose
-  .connect(process.env.DTABASE_CONNECTION_URL) // Connect to MongoDB using the connection URL from the environment
-  .then(() => console.log("database connection successful...."))
-  .catch((err) => console.log(err));
+  .connect(process.env.DATABASE_CONNECTION_URL + "/auth-users") // Connects to the MongoDB database using the connection URL and database name.
+  .then(() => console.log("Database connection successful")) // Logs a success message upon successful connection.
+  .catch((err) => console.log(err)); // Logs an error message if the connection fails.
 
-// routes
-app.use("/auth", router); // Mount the API routes under the "/auth" path
+// Routes configuration
+app.use("/api/auth", router); // Sets up routes for the API under the '/api/auth' endpoint.
 
-// not found route
+// Fallback route for unmatched requests
 app.use("*", (req, res) => {
-  res
-    .status(404)
-    .json({ success: false, error: "your requested url was not found!" });
+  res.status(404).json({ message: "Not found" }); // Returns a 404 response for undefined routes.
 });
 
-// server listening on port
-const port = process.env.SERVER_RUNNING_PORT || 5000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}...`);
-});
+// Start the server and listen on the specified port
+const PORT = process.env.SERVER_RUNNING_PORT || 5050; // Sets the server port from environment variables or defaults to 5050.
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Starts the server and logs the port number.
