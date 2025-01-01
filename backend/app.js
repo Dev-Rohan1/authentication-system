@@ -22,7 +22,7 @@ app.use(cookieParser()); // Parses cookies from incoming requests.
 
 // Database connection
 mongoose
-  .connect(process.env.DATABASE_CONNECTION_URL + "/auth-users") // Connects to the MongoDB database using the connection URL and database name.
+  .connect(`${process.env.DATABASE_CONNECTION_URL}/auth-users`) // Connects to the MongoDB database using the connection URL and database name.
   .then(() => console.log("Database connection successful")) // Logs a success message upon successful connection.
   .catch((err) => console.log(err)); // Logs an error message if the connection fails.
 
@@ -31,7 +31,7 @@ app.use("/api/auth", router); // Sets up routes for the API under the '/api/auth
 
 // Fallback route for unmatched requests
 app.use("*", (req, res) => {
-  res.status(404).json({ message: "Not found" }); // Returns a 404 response for undefined routes.
+  res.status(404).json({ message: "Url Not found" }); // Returns a 404 response for undefined routes.
 });
 
 // Start the server and listen on the specified port
