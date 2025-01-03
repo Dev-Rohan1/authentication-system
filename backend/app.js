@@ -16,7 +16,8 @@ const app = express(); // Creates an instance of the Express application.
 dotenv.config(); // Makes environment variables accessible via process.env.
 
 // Middleware configuration
-app.use(cors({ credentials: true })); // Enables CORS with support for credentials.
+const allowedOrigins = ["http://localhost:5173"];
+app.use(cors({ origin: allowedOrigins, credentials: true })); // Enables CORS with support for credentials.
 app.use(bodyParser.json()); // Parses incoming JSON request payloads.
 app.use(cookieParser()); // Parses cookies from incoming requests.
 

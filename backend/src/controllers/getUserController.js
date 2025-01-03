@@ -19,11 +19,9 @@ const getUserController = async (req, res) => {
     // If user is found, send a success response with user details
     res.json({
       success: true,
-      user: {
-        name: user.name, // User's name
-        email: user.email, // User's email
-        isAccountVerified: user.isAccountVerified, // Status of account verification
-      },
+      name: user.name, // User's name
+      email: user.email, // User's email
+      isAccountVerified: user.isAccountVerified, // Status of account verification
     });
   } catch (error) {
     // Handling any errors during the database operation

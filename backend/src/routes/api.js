@@ -32,7 +32,7 @@ router.post("/send-verify-otp", authUser, sendVerifyOtp);
 router.post("/verify-email", authUser, verifyEmail);
 
 // Route to check if a user is authenticated (requires authentication)
-router.post("/is-auth", authUser, isAuthenticated);
+router.get("/is-auth", authUser, isAuthenticated);
 
 // Route to send OTP for password reset
 router.post("/send-reset-otp", sendResetOtp);

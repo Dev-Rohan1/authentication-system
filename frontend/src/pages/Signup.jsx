@@ -1,25 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
 import { HiOutlineMail } from "react-icons/hi";
 import { FiLock } from "react-icons/fi";
 import axios from "axios";
-import { useContext } from "react";
-import { AppConetext } from "../context/AppContext";
 import { toast } from "react-toastify";
+import { AppContext } from "../context/AppContext";
 
 const signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppConetext);
+  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext);
 
   const navigate = useNavigate();
 
-  const onSubmitHalder = async (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-
     axios.defaults.withCredentials = true;
 
     try {
@@ -32,8 +30,8 @@ const signup = () => {
       if (data.success) {
         setIsLoggedIn(true);
         getUserData();
-        navigate("/");
         toast.success(data.message);
+        navigate("/");
       } else {
         toast.error(data.message);
       }
@@ -43,12 +41,12 @@ const signup = () => {
   };
 
   return (
-    <section className="mt-14">
-      <div className="w-[320px] m-auto border-[1.3px] rounded-md border-slate-200 px-4 py-5 ">
+    <section className="mt-14 flex justify-center">
+      <div className="max-w-[350px] w-full border-[1.3px] rounded-md border-slate-200 px-4 py-5 mx-4 md:mx-0">
         <h1 className="text-xl font-semibold text-black text-center">
           Signup your account
         </h1>
-        <form onSubmit={onSubmitHalder}>
+        <form onSubmit={onSubmitHandler}>
           <div className="flex items-center gap-2 mt-3  border-[1.3px] rounded-md border-slate-200 py-2 px-2">
             <FiUser className="text-xl" />
             <input
@@ -57,6 +55,7 @@ const signup = () => {
               placeholder="Enter your full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
           <div className="flex items-center gap-2 mt-3  border-[1.3px] rounded-md border-slate-200 py-2 px-2">
@@ -67,6 +66,7 @@ const signup = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="flex items-center gap-2 mt-3  border-[1.3px] rounded-md border-slate-200 py-2 px-2">
@@ -77,6 +77,7 @@ const signup = () => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           <button

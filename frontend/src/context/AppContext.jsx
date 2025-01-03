@@ -1,29 +1,53 @@
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export const AppConetext = createContext();
+export const AppContext = createContext();
 
-export const AppConetextProvider = ({ children }) => {
-  axios.defaults.withCredentials = true;
+export const AppContextProvider = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState();
-  const [displayUser, setDisplayUser] = useState([]);
 
-  const getUserData = async () => {
+  const isAuthState = async () => {
+    axios.defaults.withCredentials = true;
     try {
-      const data = await axios.get(`${backendUrl}/get-user`);
+      const { data } = await axios.get(`${backendUrl}/is-auth`);
 
-      setDisplayUser(data.data.userData);
-      data.success
-        ? setUserData(data.data.userData)
-        : toast.error(data.message);
+      if (data.success) {
+        setIsLoggedIn(true);
+        setUserData(true);
+        getUserData();
+      }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.message);
     }
   };
+
+  const getUserData = async () => {
+    axios.defaults.withCredentials = true;
+    try {
+      const { data } = await axios.get(`${backendUrl}/get-user`);
+
+      if (data.success) {
+        setUserData(true);
+        setName(data.name);
+        setEmail(data.email);
+        setVerified(data.isAccountVerified);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  isAuthState();
 
   const value = {
     backendUrl,
@@ -32,8 +56,12 @@ export const AppConetextProvider = ({ children }) => {
     userData,
     setUserData,
     getUserData,
-    displayUser,
+    name,
+    email,
+    isAuthState,
+    verified,
+    setVerified,
   };
 
-  return <AppConetext.Provider value={value}>{children}</AppConetext.Provider>;
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

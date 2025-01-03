@@ -1,21 +1,21 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { HiOutlineMail } from "react-icons/hi";
+import React, { useContext, useState } from "react";
 import { FiLock } from "react-icons/fi";
-import { AppConetext } from "../context/AppContext";
+import { HiOutlineMail } from "react-icons/hi";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AppContext } from "../context/AppContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppConetext);
 
   const navigate = useNavigate();
 
-  const onSubmitHalder = async (e) => {
-    e.preventDefault();
+  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext);
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
     axios.defaults.withCredentials = true;
 
     try {
@@ -27,8 +27,8 @@ const Login = () => {
       if (data.success) {
         setIsLoggedIn(true);
         getUserData();
-        navigate("/");
         toast.success(data.message);
+        navigate("/");
       } else {
         toast.error(data.message);
       }
@@ -38,12 +38,12 @@ const Login = () => {
   };
 
   return (
-    <section className="mt-14">
-      <div className="w-[320px] m-auto border-[1.3px] rounded-md border-slate-200 px-4 py-5 ">
+    <section className="mt-14 flex justify-center">
+      <div className="max-w-[350px] w-full border-[1.3px] rounded-md border-slate-200 px-4 py-5 mx-4 md:mx-0">
         <h1 className="text-xl font-semibold text-black text-center">
           Login your account
         </h1>
-        <form onSubmit={onSubmitHalder}>
+        <form onSubmit={onSubmitHandler}>
           <div className="flex items-center gap-2 mt-3  border-[1.3px] rounded-md border-slate-200 py-2 px-2">
             <HiOutlineMail className="text-xl" />
             <input

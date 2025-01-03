@@ -2,21 +2,18 @@ import React, { useContext } from "react";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import robotImage from "../assets/robot.png";
-import { AppConetext } from "../context/AppContext";
-import { use } from "react";
+import { AppContext } from "../context/AppContext";
 
 const Hero = () => {
-  const { displayUser } = useContext(AppConetext);
-
+  const { name, userData } = useContext(AppContext);
   return (
     <section className="flex justify-center items-center mt-24">
       <div className="flex flex-col items-center">
         <img className="w-[100px] md:w-[120px]" src={robotImage} alt="image" />
         <h2 className="text-2xl font-semibold md:font-bold mt-1 ">
-          Hey, <span>{displayUser.name ? displayUser.name : "Developer"}</span>{" "}
-          👋
+          Hey, {userData ? name : "Developer"} 👋
         </h2>
-        <h1 className="text-3xl text-center mt-2 font-semibold md:font-bold">
+        <h1 className="text-3xl max-w-[300px] md:max-w-[500px] w-full text-center mt-2 font-semibold md:font-bold">
           Welcome to our Authentication App
         </h1>
         <Link
