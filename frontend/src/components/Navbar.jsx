@@ -26,7 +26,7 @@ const Navbar = () => {
       axios.defaults.withCredentials = true;
 
       const { data } = await axios.post(`${backendUrl}/logout`);
-      console.log(data);
+
       if (data.success) {
         setIsLoggedIn(false);
         setUserData(false);

@@ -1,7 +1,6 @@
 import userModel from "../models/userModel.js"; // Import the user model
 import transporter from "../utility/nodeMailer.js"; // Import the configured Nodemailer transporter
 
-// Controller function to send a reset OTP to the user's email
 const sendResetOtp = async (req, res) => {
   // Extract the email from the request body
   const { email } = req.body;
@@ -17,7 +16,7 @@ const sendResetOtp = async (req, res) => {
 
     // If the user does not exist, return an error response
     if (!user) {
-      return res.json({ message: "User not found" });
+      return res.json({ message: "User not found!" });
     }
 
     // Generate a random 6-digit OTP
@@ -44,14 +43,14 @@ const sendResetOtp = async (req, res) => {
     // Send a success response to the client
     res.json({
       success: true,
-      message: "Reset password OTP sent successfully",
+      message: "OTP sent successfully",
     });
   } catch (error) {
     // Log any errors for debugging
     console.log(error);
 
     // Send a failure response in case of an error
-    res.json({ success: false, message: "Reset password OTP sent failed!" });
+    res.json({ success: false, message: "OTP sent failed!" });
   }
 };
 
