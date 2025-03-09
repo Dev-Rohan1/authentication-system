@@ -13,7 +13,12 @@ dotenv.config();
 const app = express();
 
 // Middleware configuration
-app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
+app.use(
+  cors({
+    origin: ["https://authentication-system-sepia.vercel.app/"],
+    credentials: true,
+  })
+);
 app.use(express.json()); // Replaces body-parser
 app.use(cookieParser());
 
