@@ -1,10 +1,10 @@
 // Import external packages
-import express from "express"; // Framework for building web applications and APIs.
-import mongoose from "mongoose"; // ODM (Object Data Modeling) library for MongoDB and Node.js.
 import bodyParser from "body-parser"; // Middleware for parsing incoming JSON request bodies.
 import cookieParser from "cookie-parser"; // Middleware for parsing cookies from incoming requests.
-import dotenv from "dotenv"; // Library to load environment variables from a .env file into process.env.
 import cors from "cors"; // Middleware to enable Cross-Origin Resource Sharing (CORS).
+import dotenv from "dotenv"; // Library to load environment variables from a .env file into process.env.
+import express from "express"; // Framework for building web applications and APIs.
+import mongoose from "mongoose"; // ODM (Object Data Modeling) library for MongoDB and Node.js.
 
 // Import internal modules and functions
 import router from "./src/routes/api.js"; // Routes defined in the 'api.js' file.
@@ -16,7 +16,7 @@ const app = express(); // Creates an instance of the Express application.
 dotenv.config(); // Makes environment variables accessible via process.env.
 
 // Middleware configuration
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["https://authentication-system-backend-pi.vercel.app"];
 app.use(cors({ origin: allowedOrigins, credentials: true })); // Enables CORS with support for credentials.
 app.use(bodyParser.json()); // Parses incoming JSON request payloads.
 app.use(cookieParser()); // Parses cookies from incoming requests.
