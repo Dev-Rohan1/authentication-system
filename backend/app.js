@@ -1,41 +1,46 @@
 // Import external packages
-import bodyParser from "body-parser"; // Middleware for parsing incoming JSON request bodies.
-import cookieParser from "cookie-parser"; // Middleware for parsing cookies from incoming requests.
-import cors from "cors"; // Middleware to enable Cross-Origin Resource Sharing (CORS).
-import dotenv from "dotenv"; // Library to load environment variables from a .env file into process.env.
-import express from "express"; // Framework for building web applications and APIs.
-import mongoose from "mongoose"; // ODM (Object Data Modeling) library for MongoDB and Node.js.
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
 
-// Import internal modules and functions
-import router from "./src/routes/api.js"; // Routes defined in the 'api.js' file.
+// Import internal modules
+import router from "./src/routes/api.js";
 
-// Initialize the Express application
-const app = express(); // Creates an instance of the Express application.
-
-// Load environment variables from .env file
-dotenv.config(); // Makes environment variables accessible via process.env.
+// Initialize Express app
+dotenv.config();
+const app = express();
 
 // Middleware configuration
-const allowedOrigins = ["https://authentication-system-backend-pi.vercel.app"];
-app.use(cors({ origin: allowedOrigins, credentials: true })); // Enables CORS with support for credentials.
-app.use(bodyParser.json()); // Parses incoming JSON request payloads.
-app.use(cookieParser()); // Parses cookies from incoming requests.
+app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
+app.use(express.json()); // Replaces body-parser
+app.use(cookieParser());
 
 // Database connection
+const DATABASE_URL = process.env.DATABASE_CONNECTION_URL;
+if (!DATABASE_URL) {
+  console.error("DATABASE_CONNECTION_URL is missing in environment variables.");
+  process.exit(1); // Stop the app if DB URL is missing
+}
+
 mongoose
-  .connect(`${process.env.DATABASE_CONNECTION_URL}/auth-users`) // Connects to the MongoDB database using the connection URL and database name.
-  .then(() => console.log("Database connection successful")) // Logs a success message upon successful connection.
-  .catch((err) => console.log(err)); // Logs an error message if the connection fails.
+  .connect(`${DATABASE_URL}/auth-users`)
+  .then(() => console.log("✅ Database connected successfully"))
+  .catch((err) => {
+    console.error("❌ Database connection failed:", err.message);
+    process.exit(1); // Exit if DB connection fails
+  });
 
-// Routes configuration
-app.get("/", (req, res) => res.send("Api Working"));
-app.use("/api/auth", router); // Sets up routes for the API under the '/api/auth' endpoint.
+// Routes
+app.get("/", (req, res) => res.send("API is working"));
+app.use("/api/auth", router);
 
-// Fallback route for unmatched requests
+// Handle 404 errors
 app.use("*", (req, res) => {
-  res.status(404).json({ message: "Url Not found" }); // Returns a 404 response for undefined routes.
+  res.status(404).json({ message: "URL not found" });
 });
 
-// Start the server and listen on the specified port
-const PORT = process.env.SERVER_RUNNING_PORT || 5050; // Sets the server port from environment variables or defaults to 5050.
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Starts the server and logs the port number.
+// Start server
+const PORT = process.env.SERVER_RUNNING_PORT || 5050;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
