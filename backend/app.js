@@ -28,6 +28,7 @@ mongoose
   .catch((err) => console.log(err)); // Logs an error message if the connection fails.
 
 // Routes configuration
+app.get("/", (req, res) => res.send("Api Working"));
 app.use("/api/auth", router); // Sets up routes for the API under the '/api/auth' endpoint.
 
 // Fallback route for unmatched requests
