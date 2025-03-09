@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -7,42 +7,60 @@ import { useNavigate } from "react-router-dom";
 const EmailVerification = () => {
   axios.defaults.withCredentials = true;
 
-  const inputRefs = React.useRef([]);
-
+  const inputRefs = useRef(Array(6).fill(null)); // Correct use of useRef
   const { backendUrl, getUserData, isLoggedIn, verified } =
     useContext(AppContext);
-
   const navigate = useNavigate();
 
+  // Handle input and move to next field
   const handleInput = (e, index) => {
-    if (e.target.value.length > 0 && index < inputRefs.current.length - 1) {
-      inputRefs.current[index + 1].focus();
+    const value = e.target.value.replace(/[^0-9]/g, ""); // Only allow numbers
+    e.target.value = value; // Ensure only numbers remain
+
+    if (value.length > 0 && index < inputRefs.current.length - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
+  // Handle Backspace key
   const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && e.target.value.length === 0 && index > 0) {
-      inputRefs.current[index - 1].focus();
+    if (e.key === "Backspace") {
+      if (e.target.value.length === 0 && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        e.target.value = ""; // Clear the current input field
+      }
     }
   };
 
-  const handlePast = (e) => {
-    const pastedData = e.clipboardData.getData("text");
-    const pastArray = pastedData.split("");
+  // Handle Paste event
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, ""); // Get only digits
+    if (pastedData.length !== 6) return; // Ensure exactly 6 digits
 
-    pastArray.forEach((char, index) => {
+    // Clear all fields before pasting
+    inputRefs.current.forEach((input) => (input.value = ""));
+
+    // Paste the values
+    pastedData.split("").forEach((char, index) => {
       if (inputRefs.current[index]) {
         inputRefs.current[index].value = char;
       }
     });
+
+    // Move focus to the last filled input field
+    inputRefs.current[Math.min(pastedData.length - 1, 5)]?.focus();
   };
 
+  // Handle form submission
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-
     try {
-      const otpArray = inputRefs.current.map((e) => e.value);
-      const otp = otpArray.join("");
+      const otp = inputRefs.current.map((input) => input.value).join("");
+      if (otp.length !== 6) {
+        return toast.error("Please enter a 6-digit OTP.");
+      }
 
       const { data } = await axios.post(`${backendUrl}/verify-email`, { otp });
 
@@ -54,13 +72,16 @@ const EmailVerification = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || "OTP verification failed.");
     }
   };
 
+  // Redirect if already verified
   useEffect(() => {
-    isLoggedIn && verified && navigate("/");
-  }, [isLoggedIn, verified]);
+    if (isLoggedIn && verified) {
+      navigate("/");
+    }
+  }, [isLoggedIn, verified, navigate]);
 
   return (
     <section className="mt-14 flex justify-center">
@@ -69,32 +90,30 @@ const EmailVerification = () => {
           Email Verification OTP
         </h1>
         <p className="text-center mt-1 mb-2">
-          Enter 6-digit code sent to your email id.
+          Enter the 6-digit code sent to your email.
         </p>
         <form onSubmit={onSubmitHandler}>
           <div
             className="flex items-center justify-center gap-4 mt-5"
-            onPaste={handlePast}
+            onPaste={handlePaste}
           >
             {Array(6)
               .fill(0)
-              .map((_, index) => {
-                return (
-                  <input
-                    className="border-[1.3px] rounded-md border-slate-200 w-[40px] h-[40px] text-center outline-none"
-                    type="text"
-                    maxLength="1"
-                    key={index}
-                    ref={(e) => (inputRefs.current[index] = e)}
-                    onInput={(e) => handleInput(e, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                  />
-                );
-              })}
+              .map((_, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  maxLength="1"
+                  className="border-[1.3px] rounded-md border-slate-200 w-[40px] h-[40px] text-center outline-none"
+                  ref={(el) => (inputRefs.current[index] = el)} // Correct use of ref assignment
+                  onInput={(e) => handleInput(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                />
+              ))}
           </div>
           <button
-            className="w-full border-[1.3px] rounded-md border-slate-200 py-[7px] text-gray-700 mt-5"
             type="submit"
+            className="w-full border-[1.3px] rounded-md border-slate-200 py-[7px] text-gray-700 mt-5"
           >
             Verify Email
           </button>

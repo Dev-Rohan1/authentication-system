@@ -15,8 +15,8 @@ const app = express();
 // Middleware configuration
 app.use(
   cors({
-    origin: ["https://authentication-system-sepia.vercel.app/"],
-    credentials: true,
+    origin: ["https://authentication-system-sepia.vercel.app/"], // Set your frontend URL explicitly
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   })
 );
 app.use(express.json()); // Replaces body-parser
